@@ -34,6 +34,7 @@ variable "worker_groups" {
     asg_desired_capacity = number
     asg_min_size         = number
     asg_max_size         = number
+    platform             = string
   }))
 }
 

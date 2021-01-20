@@ -7,4 +7,6 @@ locals {
     1.18: "v1.18.3",
     1.19: "v1.19.1"
   }
+  linux_worker_groups = [for wg in var.worker_groups: wg if wg.platform == "linux"]
+  windows_worker_groups = [for wg in var.worker_groups: wg if wg.platform == "windows"]
 }

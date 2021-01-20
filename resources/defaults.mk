@@ -11,10 +11,11 @@ M_AMI_TYPE ?= AL2_x86_64
 define _M_WORKER_GROUPS
 [{
   name: default_wg,
-  instance_type: t2.small,
-  asg_desired_capacity: 1,
+  instance_type: t2.large,
+  asg_desired_capacity: 3,
   asg_min_size: 1,
-  asg_max_size: 1,
+  asg_max_size: 4,
+  platform: windows
 }]
 endef
 

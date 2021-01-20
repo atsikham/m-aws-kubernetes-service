@@ -10,30 +10,25 @@ module "control_plane" {
   }
 }
 
-module "nodes" {
-  source        = "./modules/nodes"
+module "linux_nodes" {
+  count         = length(local.linux_worker_groups) > 0 ? 1 : 0
+  source        = "./modules/linux_nodes"
   name          = var.name
   subnet_ids    = local.subnet_ids
-  worker_groups = var.worker_groups
-  depends_on    = [module.control_plane]
+  worker_groups = local.linux_worker_groups
   disk_size     = var.disk_size
   ami_type      = var.ami_type
   ec2_ssh_key   = var.ec2_ssh_key
-  
-  providers     = {
-    aws = aws
-  }
+  depends_on    = [module.control_plane]
 }
 
-module "windows-nodes" {
-  source        = "./modules/windows-nodes"
+module "windows_nodes" {
+  count         = length(local.windows_worker_groups) > 0 ? 1 : 0
+  source        = "./modules/windows_nodes"
   name          = var.name
-  subnet_ids    = local.subnet_ids
-  vpc_id        = var.vpc_id
-
-  providers     = {
-    aws = aws
-  }
+  region        = var.region
+  worker_groups = local.windows_worker_groups
+  depends_on    = [module.control_plane]
 }
 
 module "autoscaler" {
@@ -45,7 +40,7 @@ module "autoscaler" {
   autoscaler_version                          = local.autoscaler_version
   autoscaler_chart_version                    = "7.3.4"
   autoscaler_scale_down_utilization_threshold = var.autoscaler_scale_down_utilization_threshold
-  depends_on                                  = [module.control_plane, module.nodes]
+  depends_on                                  = [module.control_plane, module.linux_nodes, module.windows_nodes]
   
   # https://discuss.hashicorp.com/t/module-does-not-support-depends-on/11692/3
   providers                = {
